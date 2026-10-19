@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Calculadora educativa de estimativa de calorias para o Desafio 30 Dias.">
+<title>Calculadora | Desafio 30 Dias</title>
+<style>
+:root{--moss:#71836a;--moss-dark:#43533f;--pink:#ed6ca8;--pink-light:#fff0f6;--beige:#f7f0e5;--ink:#293128;--muted:#687064;--white:#fff}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(135deg,#f7f0e5,#fdf9f5 55%,#fcebf2);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);line-height:1.5}
+main{max-width:760px;margin:0 auto;padding:22px 16px 40px}
+header{text-align:center;padding:26px 18px 22px;background:var(--moss-dark);color:white;border-radius:22px 22px 0 0}
+.kicker{text-transform:uppercase;letter-spacing:.16em;font-size:.76rem;font-weight:800;color:#ffd2e5}
+h1{margin:8px 0 5px;font-size:clamp(1.7rem,5vw,2.5rem);line-height:1.12}
+header p{margin:8px auto 0;max-width:510px;color:#f5f1e9}
+.card{background:white;border:1px solid #e9e0d5;border-radius:0 0 22px 22px;padding:22px;box-shadow:0 12px 35px #43533f12}
+h2{font-size:1.15rem;margin:0 0 14px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field.full{grid-column:1/-1}
+label{font-weight:700;font-size:.92rem}
+input,select{font:inherit;width:100%;padding:12px;border:1px solid #d9d9d0;border-radius:11px;background:#fff;color:var(--ink)}
+input:focus,select:focus{outline:3px solid #ed6ca84a;border-color:var(--pink)}
+.help{font-size:.78rem;color:var(--muted);margin-top:1px}
+button{width:100%;border:0;border-radius:13px;padding:14px 18px;font:inherit;font-weight:800;cursor:pointer}
+.primary{margin-top:18px;background:var(--pink);color:#321525}
+.primary:hover{filter:brightness(.97)}
+.result{display:none;margin-top:20px;padding:18px;border-radius:16px;background:var(--pink-light);border:1px solid #f5c5da}
+.result.show{display:block}
+.result h2{color:#87385d}
+.metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}
+.metric{background:white;border-radius:12px;padding:13px}
+.metric span{display:block;color:var(--muted);font-size:.8rem}
+.metric strong{font-size:1.22rem;color:var(--moss-dark)}
+.note{font-size:.87rem;color:#4f584c}
+.disclaimer{margin-top:20px;padding:15px;border-radius:14px;background:#f7f0e5;font-size:.84rem;color:#55594f}
+footer{text-align:center;color:var(--muted);font-size:.8rem;padding:16px}
+@media(max-width:520px){.grid,.metrics{grid-template-columns:1fr}.card{padding:17px}.field.full{grid-column:auto}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="kicker">Desafio 30 Dias</div>
+  <h1>Descubra sua estimativa de calorias</h1>
+  <p>Um ponto de partida para entender suas necessidades e seguir sua jornada com mais consciência. 🌸</p>
+</header>
+<section class="card">
+  <h2>Conta pra gente um pouquinho sobre ti</h2>
+  <form id="calcForm">
+    <div class="grid">
+      <div class="field"><label for="age">Idade (anos)</label><input id="age" type="number" min="18" max="100" required placeholder="Ex.: 30"></div>
+      <div class="field"><label for="sex">Sexo usado na equação</label><select id="sex" required><option value="f">Feminino</option><option value="m">Masculino</option></select><div class="help">Usado apenas para estimar o metabolismo basal.</div></div>
+      <div class="field"><label for="weight">Peso (kg)</label><input id="weight" type="number" min="30" max="350" step="0.1" required placeholder="Ex.: 65"></div>
+      <div class="field"><label for="height">Altura (cm)</label><input id="height" type="number" min="120" max="230" required placeholder="Ex.: 165"></div>
+      <div class="field full"><label for="activity">Nível de atividade habitual</label>
+        <select id="activity" required>
+          <option value="1.2">Sedentária — pouco exercício no dia a dia</option>
+          <option value="1.375">Leve — exercício leve, 1 a 3 dias/semana</option>
+          <option value="1.55" selected>Moderada — exercício, cerca de 3 a 5 dias/semana</option>
+          <option value="1.725">Alta — treino intenso/frequente e rotina ativa</option>
+          <option value="1.9">Muito alta — atividade física muito exigente</option>
+        </select>
+        <div class="help">Escolhe a opção que melhor representa a rotina como um todo, não só os treinos.</div>
+      </div>
+      <div class="field full"><label for="goal">Qual é teu objetivo principal?</label>
+        <select id="goal" required>
+          <option value="loss">Emagrecer / perder gordura</option>
+          <option value="gain">Ganhar massa muscular</option>
+          <option value="maintain">Manter o peso / melhorar a composição corporal</option>
+        </select>
+      </div>
+    </div>
+    <button class="primary" type="submit">Calcular minha estimativa</button>
+  </form>
+  <section id="result" class="result" aria-live="polite">
+    <h2>Tua estimativa</h2>
+    <p id="intro" class="note"></p>
+    <div class="metrics">
+      <div class="metric"><span>Metabolismo basal estimado</span><strong id="bmr">—</strong><span>kcal/dia em repouso</span></div>
+      <div class="metric"><span>Manutenção estimada</span><strong id="tdee">—</strong><span>kcal/dia para manter o peso</span></div>
+      <div class="metric"><span>Faixa estimada para teu objetivo</span><strong id="target">—</strong><span>kcal/dia</span></div>
+      <div class="metric"><span>Proteína diária de referência*</span><strong id="protein">—</strong><span>gramas/dia</span></div>
+    </div>
+    <p id="explain" class="note"></p>
+    <p class="help">*Referência geral de 1,6–2,2 g/kg/dia para adultos saudáveis que treinam força; não é adequada a todos, especialmente em certas condições clínicas.</p>
+  </section>
+  <div class="disclaimer"><strong>Importante:</strong> esta calculadora fornece apenas uma estimativa educativa usando a equação de Mifflin–St Jeor e fatores de atividade aproximados. Não é uma dieta nem substitui avaliação de nutricionista. As necessidades reais variam; acompanhe a evolução e ajuste com profissional. Não é destinada a menores de 18 anos, gestantes, lactantes ou pessoas com necessidades clínicas específicas. Evite restrições extremas.</div>
+</section>
+<footer>Desafio 30 Dias · Informação educativa · Verde-musgo, rosa e bege</footer>
+</main>
+<script>
+const fmt = n => Math.round(n).toLocaleString('pt-BR');
+document.getElementById('calcForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const age=Number(document.getElementById('age').value);
+  const weight=Number(document.getElementById('weight').value);
+  const height=Number(document.getElementById('height').value);
+  const sex=document.getElementById('sex').value;
+  const activity=Number(document.getElementById('activity').value);
+  const goal=document.getElementById('goal').value;
+  if(age<18 || !weight || !height){return;}
+  // Mifflin-St Jeor: estimates resting energy expenditure.
+  const bmr=10*weight+6.25*height-5*age+(sex==='m'?5:-161);
+  const tdee=bmr*activity;
+  let low,high,intro,explain;
+  if(goal==='loss'){
+    low=tdee*.80; high=tdee*.90;
+    intro='Para emagrecimento, a faixa abaixo representa um déficit estimado de 10–20% em relação à manutenção.';
+    explain='A resposta varia de pessoa para pessoa. Se houver fadiga, fome intensa, queda no desempenho ou outras preocupações, procure orientação profissional; não persiga a menor quantidade possível de calorias.';
+  } else if(goal==='gain'){
+    low=tdee*1.05; high=tdee*1.10;
+    intro='Para ganho de massa muscular, a faixa abaixo representa um superávit inicial estimado de 5–10% em relação à manutenção.';
+    explain='Um superávit não garante que todo o ganho seja músculo. Treino progressivo, recuperação, sono e acompanhamento da evolução também importam.';
+  } else {
+    low=tdee*.95; high=tdee*1.05;
+    intro='Para manutenção/recomposição, a faixa abaixo fica próxima à manutenção estimada; a necessidade real pode variar.';
+    explain='É possível melhorar a composição corporal sem grande mudança no peso, mas o resultado depende do treino, alimentação, recuperação e contexto individual.';
+  }
+  document.getElementById('bmr').textContent=fmt(bmr);
+  document.getElementById('tdee').textContent=fmt(tdee);
+  document.getElementById('target').textContent=fmt(low)+'–'+fmt(high);
+  document.getElementById('protein').textContent=fmt(weight*1.6)+'–'+fmt(weight*2.2)+' g';
+  document.getElementById('intro').textContent=intro;
+  document.getElementById('explain').textContent=explain;
+  const r=document.getElementById('result');r.classList.add('show');r.scrollIntoView({behavior:'smooth',block:'nearest'});
+});
+</script>
+</body>
+</html>
